@@ -5,8 +5,8 @@ source "${CURR_DIR}/docker_base.sh"
 
 CACHE_ROOT_DIR="${DOCKERFILE_ROOT_DIR}/.cache"
 
-DOCKER_REPO="harbor.izdrive.ai:80/my_zdriver_docker/zark"
-DEF_DOCKER_IMAGE_VERSION=${DOCKER_REPO}:zark-j6-32518
+DOCKER_REPO="fastddstest"
+DEF_DOCKER_IMAGE_VERSION=${DOCKER_REPO}:1.0.0
 
 
 DEV_IMAGE_VERSION=${DEF_DOCKER_IMAGE_VERSION}
@@ -23,7 +23,7 @@ FAST_MODE="no"
 
 GEOLOC=
 
-USE_LOCAL_IMAGE=0
+USE_LOCAL_IMAGE=1
 CUSTOM_DIST=
 USER_AGREED="no"
 
@@ -44,6 +44,7 @@ OPTIONS:
     -d, --dist             Specify Zark distribution(stable/testing)
     --shm-size <bytes>     Size of /dev/shm . Passed directly to "docker run"
     -v,                    Map extra path into docker
+    -n, --name             Specify the docker Name
     stop                   Stop all running zark containers.
 EOF
 }
@@ -87,7 +88,10 @@ function parse_arguments() {
                 shift
                 optarg_check_for_opt "${opt}" "${geo}"
                 ;;
-
+            -n | --name)
+                DEV_CONTAINER="$1_${USER}"
+                shift
+                ;;
             -l | --local)
                 USE_LOCAL_IMAGE=1
                 ;;
@@ -265,7 +269,8 @@ function main() {
         -e NVIDIA_DRIVER_CAPABILITIES=compute,video,graphics,utility \
         -e TENSORRT_VERSION=8.4.3 \
         --net host \
-        -w /zark \
+        -v ${DOCKERFILE_ROOT_DIR}:${DOCKERFILE_ROOT_DIR} \
+        -w ${DOCKERFILE_ROOT_DIR} \
         --add-host "${DEV_INSIDE}:127.0.0.1" \
         --add-host "${local_host}:127.0.0.1" \
         --hostname "${DEV_INSIDE}" \

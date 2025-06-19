@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 DOCKER_USER="${USER}"
-DEV_CONTAINER="j6_tros_${USER}"
+DEV_CONTAINER="$1_${USER}"
 
 xhost +local:root 1>/dev/null 2>&1
 
